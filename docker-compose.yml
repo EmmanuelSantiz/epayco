@@ -1,0 +1,44 @@
+version: '3.8'
+services:
+  api:
+    build: ./api
+    volumes:
+      - ./api:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - '3000:3000'
+    depends_on:
+      - soap
+      - db
+    environment:
+      - PORT=3000
+      - NODE_ENV=development
+      - CORS_ORIGIN=*
+      - SOAP_URL=http://soap:80/soap
+  soap:
+    container_name: php-apache-soap
+    build:
+      context: ./soap
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    volumes:
+      - ./soap/app:/var/www/html
+    depends_on:
+      - db
+  db:
+    platform: linux/x86_64
+    image: mysql
+    restart: unless-stopped
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: epayco
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_USER: root
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./mysql/epayco.sql:/docker-entrypoint-initdb.d/datadump.sql
+
+volumes:
+  mysql-data:

@@ -2,14 +2,14 @@
 
 ## Descripción
 
-ePayco es un sistema de billetera digital que permite a los usuarios registrarse, recargar saldo y realizar transacciones. La aplicación está construida con una arquitectura de microservicios, utilizando Node.js para la API REST y PHP para el servicio SOAP.
+ePayco es un sistema de billetera digital que permite a los usuarios registrarse, recargar saldo y realizar transacciones. La aplicación está construida con una arquitectura de microservicios, utilizando Node.js para la API REST y PHP nativo para el servicio SOAP.
 
 ## Arquitectura
 
 El sistema está compuesto por tres servicios principales:
 
 1. **API REST (Node.js/Express)**: Proporciona endpoints para la gestión de clientes y operaciones de billetera.
-2. **Servicio SOAP (PHP)**: Maneja la lógica de negocio y las operaciones con la base de datos.
+2. **Servicio SOAP Nativo (PHP)**: Implementa la lógica de negocio y las operaciones con la base de datos utilizando PHP nativo.
 3. **Base de datos (MySQL)**: Almacena la información de clientes, billeteras y transacciones.
 
 ### Diagrama de Arquitectura
@@ -18,8 +18,8 @@ El sistema está compuesto por tres servicios principales:
 ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
 │             │     │             │     │             │
 │  Cliente    │────▶│  API REST   │────▶│  Servicio   │
-│  (Frontend) │     │  (Node.js)  │     ���  SOAP (PHP) │
-│             │     │             │     │             │
+│  (Frontend) │     │  (Node.js)  │     │  SOAP       │
+│             │     │             │     │  (PHP Nativo)│
 └─────────────┘     └─────────────┘     └─────────────┘
                                               │
                                               ▼
@@ -90,14 +90,9 @@ CREATE TABLE transacciones (
    cd epayco
    ```
 
-2. Configurar las variables de entorno:
+1. Iniciar los servicios con Docker Compose:
    ```bash
-   cp api/.env.example api/.env
-   ```
-
-3. Iniciar los servicios con Docker Compose:
-   ```bash
-   docker-compose up -d
+   docker-compose up --build -d
    ```
 
 4. Verificar que los servicios estén funcionando:
@@ -129,9 +124,9 @@ CREATE TABLE transacciones (
    npm run dev
    ```
 
-#### Servicio SOAP (PHP)
+#### Servicio SOAP Nativo (PHP)
 
-1. Navegar al directorio del servicio SOAP:
+1. Navegar al directorio del servicio SOAP nativo:
    ```bash
    cd soap_native
    ```
@@ -196,7 +191,7 @@ epayco/
 │   ├── package.json          # Dependencias y scripts
 │   └── tsconfig.json         # Configuración de TypeScript
 │
-├── soap_native/              # Servicio SOAP (PHP)
+├── soap_native/              # Servicio SOAP implementado con PHP nativo
 │   ├── soap_service.php      # Implementación del servicio SOAP
 │   ├── db_config.php         # Configuración de la base de datos
 │   └── Dockerfile            # Configuración de Docker
@@ -238,7 +233,7 @@ epayco/
 
 ### API no se conecta al servicio SOAP
 
-Verificar que el servicio SOAP esté funcionando correctamente:
+Verificar que el servicio SOAP nativo esté funcionando correctamente:
 ```bash
 docker logs php-apache-soap-native
 ```
@@ -260,6 +255,13 @@ Si no está instalada, actualizar el Dockerfile y reconstruir la imagen:
 RUN docker-php-ext-install pdo pdo_mysql soap
 ```
 
+### Problemas con la conexión a la base de datos
+
+Verificar que la base de datos esté correctamente configurada y accesible:
+```bash
+docker exec -it php-apache-soap-native php -r "try { new PDO('mysql:host=db;dbname=epayco', 'root', 'root'); echo 'Conexión exitosa\n'; } catch(PDOException \$e) { echo 'Error: ' . \$e->getMessage(); }"
+```
+
 ## Contribución
 
 1. Hacer fork del repositorio
@@ -268,12 +270,8 @@ RUN docker-php-ext-install pdo pdo_mysql soap
 4. Hacer push a la rama (`git push origin feature/amazing-feature`)
 5. Abrir un Pull Request
 
-## Licencia
-
-Este proyecto está licenciado bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
-
 ## Contacto
 
-Nombre - [tu-email@example.com](mailto:tu-email@example.com)
+Nombre - [tu-email@example.com](mailto:emmanuel.07.01@hotmail.com)
 
-Link del Proyecto: [https://github.com/tu-usuario/epayco](https://github.com/tu-usuario/epayco)
+Link del Proyecto: [https://github.com/tu-usuario/epayco](https://github.com/EmmanuelSantiz/epayco)

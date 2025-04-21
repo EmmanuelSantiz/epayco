@@ -1,16 +1,22 @@
-FROM node:19.6.0-alpine AS build 
-RUN mkdir -p /usr/src/app
+FROM node:16-alpine AS build
+
 WORKDIR /usr/src/app
-COPY package*.json /usr/src/app/
-RUN npm install
-COPY . /usr/src/app/
 
-##FROM build as production
+# Copy package.json and package-lock.json
+COPY package*.json ./
 
-##ENV NODE_PATH=./build
+# Install dependencies and xml2js explicitly
+RUN npm install && npm install xml2js && npm i --save-dev @types/xml2js
 
-##RUN npm run build
+# Copy source code
+COPY . .
 
+# Build the application
+RUN npm run build
+
+FROM build as production
+
+ENV NODE_PATH=./build
 
 EXPOSE 3000
 CMD ["npm", "start"]

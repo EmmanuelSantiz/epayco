@@ -8,24 +8,39 @@ services:
     ports:
       - '3000:3000'
     depends_on:
-      - soap
+      - soap_native
       - db
     environment:
       - PORT=3000
       - NODE_ENV=development
       - CORS_ORIGIN=*
-      - SOAP_URL=http://soap:80/soap
-  soap:
-    container_name: php-apache-soap
+      - SOAP_URL=http://soap_native:80/soap_service.php
+    networks:
+      - app-network
+  #soap:
+  #  container_name: php-apache-soap
+  #  build:
+  #    context: ./soap
+  #    dockerfile: Dockerfile
+  #  ports:
+  #    - "80:80"
+  #  volumes:
+  #    - ./soap/app:/var/www/html
+  #  depends_on:
+  #    - db
+  soap_native:
+    container_name: php-apache-soap-native
     build:
-      context: ./soap
+      context: ./soap_native
       dockerfile: Dockerfile
     ports:
-      - "80:80"
+      - "8080:80"
     volumes:
-      - ./soap/app:/var/www/html
+      - ./soap_native:/var/www/html
     depends_on:
       - db
+    networks:
+      - app-network
   db:
     platform: linux/x86_64
     image: mysql
@@ -39,6 +54,12 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
       - ./mysql/epayco.sql:/docker-entrypoint-initdb.d/datadump.sql
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
 
 volumes:
   mysql-data:

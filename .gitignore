@@ -1,1 +1,12 @@
 .qodo
+
+#soap
+/soap/app/.env.local
+/soap/app/.env.local.php
+/soap/app/.env.*.local
+/soap/app/config/secrets/prod/prod.decrypt.private.php
+/soap/app/public/bundles/
+/soap/app/var/
+/soap/app/vendor/
+
+#Api
